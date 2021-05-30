@@ -33,29 +33,34 @@ class Date {
         function recurse(obj, func, content) {
             let prop = null;
             for (prop in obj) {
+                //console.log("получили "+obj[prop]+ " типа "+typeof(obj[prop]+ "где свойство " +prop));
+                console.log("вход"+content);
                 if (typeof(obj[prop]) === 'object') { 
-                    /*Если обьект пришёл, но в нём массив значений - цифровых ключей*/
-                    if (obj[prop][0] !== undefined) {
-                         obj[prop].forEach(function (item,i,arr) 
-                            {   
-                                console.log(prop+'_'+i, item);
-                                return func(content, [prop+'_'+i, item]);
+                    /*Если обьект пришёл, но в нём массив значений:
+                     * элементам массива присваивается соответсвующий индекс *_i
+                     * */
+                    //console.log("зашли внутрь "+obj[prop]+ " типа "+typeof(obj[prop]+ "где свойство " +prop));
+                    if (typeof(obj[prop][0]) !== "undefined") {
+                         obj[prop].forEach(function(item,i,arr) 
+                            {   console.log("передаём внутри "+ [prop, item]);
+                                content = func(content, [prop+'_'+i, item]);
                             });
+                            return content;
                         }
-                console.log(`${obj[prop]} ${typeof(obj[prop])}`); 
                 recurse(obj[prop], func, content);
-                }
-            console.log(`${obj[prop]} не объект`);
-            console.log([obj[prop], prop]);
-            content = func(content, [prop,obj[prop]]);
-            console.log(content);
+                };
+            console.log("передаём "+ [prop, obj[prop]]);
+            content = func(content, [prop, obj[prop]]);
+            console.log("выход"+content);
             }
+            return content;
         };
         
         content = recurse(jsonParse, this.func, content);
         
         let cell = document.createElement('div');
-        return console.log(cell.innerHTML= `${content}`);
+        return console.log(content);
+        //return console.log(cell.innerHTML= `${content}`);
     }
     
 } 
@@ -76,7 +81,7 @@ let HTML = `<person>
                 <firstName>p_firstName</firstName>
                 <lastName>p_lastName</lastName>
                     <address>
-                        <streetAddress></streetAddress>
+                        <streetAddress>p_streetAddress</streetAddress>
                         <city>p_city</city>
                         <postalCode></postalCode>
                     </address>
