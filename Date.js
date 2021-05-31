@@ -10,7 +10,15 @@
  * - ячейка даты по входному HTML, дате, функции вывода в эту ячейку иформации.
  */
 
-
+/*
+ * 
+ * @type Класс Date, принимает контент в виде HTML кода,
+ * даты в виде даты формата Date, информации в ф-те Json
+ * И функции обработки Json в код
+ * Aункция обработbr: принимает 2 аргумента - HTML код, а 
+ * так же массив [ключ, значение], и определяет что и как
+ * изменить в HTML коде.
+ */
 class Date {
     constructor(HTML, date, jsonInform, func){
         this.HTML = HTML;
@@ -23,7 +31,6 @@ class Date {
     contentGenerator () {
         let content = this.HTML;
         let jsonParse = JSON.parse(this.jsonInform);
-        console.log(jsonParse);
         /*
          * Ищем сопадения в HTML коде по заданному признаку
          * и меняем на данные с Json Informtaion
@@ -33,34 +40,28 @@ class Date {
         function recurse(obj, func, content) {
             let prop = null;
             for (prop in obj) {
-                //console.log("получили "+obj[prop]+ " типа "+typeof(obj[prop]+ "где свойство " +prop));
-                console.log("вход"+content);
                 if (typeof(obj[prop]) === 'object') { 
                     /*Если обьект пришёл, но в нём массив значений:
                      * элементам массива присваивается соответсвующий индекс *_i
                      * */
-                    //console.log("зашли внутрь "+obj[prop]+ " типа "+typeof(obj[prop]+ "где свойство " +prop));
                     if (typeof(obj[prop][0]) !== "undefined") {
                          obj[prop].forEach(function(item,i,arr) 
-                            {   console.log("передаём внутри "+ [prop, item]);
+                            {   
                                 content = func(content, [prop+'_'+i, item]);
                             });
                             return content;
                         }
-                recurse(obj[prop], func, content);
+                content = recurse(obj[prop], func, content);
                 };
-            console.log("передаём "+ [prop, obj[prop]]);
             content = func(content, [prop, obj[prop]]);
-            console.log("выход"+content);
             }
             return content;
         };
         
         content = recurse(jsonParse, this.func, content);
-        
         let cell = document.createElement('div');
+        this.makedContent = cell;
         return console.log(content);
-        //return console.log(cell.innerHTML= `${content}`);
     }
     
 } 
@@ -102,5 +103,4 @@ let func = function (text, item) {
 let date = new Date(HTML, '1/06/22', jsonInform, func);
 
 date.contentGenerator();
-
 
